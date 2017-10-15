@@ -1,115 +1,100 @@
-<template>
-  <v-app light>
-    <v-navigation-drawer
-      persistent
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      v-model="drawer"
-      enable-resize-watcher
-      app
-    >
-      <v-list>
-        <v-list-tile
-          value="true"
-          v-for="(item, i) in items"
-          :key="i"
-        >
-          <v-list-tile-action>
-            <v-icon light v-html="item.icon"></v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-toolbar fixed app :clipped-left="clipped">
-      <v-toolbar-side-icon @click.stop="drawer = !drawer" light></v-toolbar-side-icon>
-      <v-btn
-        icon
-        light
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        light
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>web</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        light
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>remove</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        icon
-        light
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>menu</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <main>
-      <v-content>
-        <v-container fluid>
-          <v-slide-y-transition mode="out-in">
-            <v-layout column align-center>
-              <img src="/static/img/v.png" alt="Vuetify.js" class="mb-5">
-              <blockquote>
-                &#8220;First, solve the problem. Then, write the code.&#8221;
-                <footer>
-                  <small>
-                    <em>&mdash;John Johnson</em>
-                  </small>
-                </footer>
-              </blockquote>
-            </v-layout>
-          </v-slide-y-transition>
-        </v-container>
-      </v-content>
-    </main>
-    <v-navigation-drawer
-      temporary
-      :right="right"
-      v-model="rightDrawer"
-      app
-    >
-      <v-list>
-        <v-list-tile @click="right = !right">
-          <v-list-tile-action>
-            <v-icon light>compare_arrows</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; 2017</span>
-    </v-footer>
-  </v-app>
+<template lang="pug">
+  v-app(light)
+    v-layout
+      v-flex(xs12, sm6, offset-sm3)
+        v-card
+          v-form.form
+            v-menu(lazy
+                   v-model='start', 
+                   transition='scale-transition', 
+                   offset-y, 
+                   full-width, 
+                   :nudge-right='40', 
+                   max-width='290px', 
+                   min-width='290px')
+              v-text-field(slot='activator', 
+                          label='Дата старта', 
+                          v-model='date.start', 
+                          prepend-icon='event', 
+                          readonly)
+              v-date-picker(v-model='date.start', 
+                            no-title, 
+                            scrollable, 
+                            actions)
+                template(slot-scope='{ save, cancel }')
+
+            v-menu(lazy
+                   v-model='end', 
+                   transition='scale-transition', 
+                   offset-y, 
+                   full-width, 
+                   :nudge-right='40', 
+                   max-width='290px', 
+                   min-width='290px')
+              v-text-field(slot='activator', 
+                          label='Дата конца', 
+                          v-model='date.end', 
+                          prepend-icon='event', 
+                          readonly)
+              v-date-picker(v-model='date.end', 
+                            no-title, 
+                            scrollable, 
+                            actions)
+                template(slot-scope='{ save, cancel }')
+            v-text-field(name="sum"
+                         prepend-icon='attach_money',
+                         label="Сумма")
+
+          v-dialog(v-model='dialog',
+                   persistent, 
+                   max-width='500px')
+            v-btn(fab,
+                  dark, 
+                  color='indigo',
+                  slot='activator')
+              v-icon(dark) add
+            v-card
+              v-card-title
+                span.headline User Profile
+              v-card-text
+                v-container(grid-list-md)
+                  v-layout(wrap)
+                    v-flex(xs12, sm6, md4)
+                      v-text-field(label='Legal first name', required)
+                    
+              v-card-actions
+                v-spacer
+                v-btn(color='blue darken-1', flat, @click.native='dialog = false') Close
+                v-btn(color='blue darken-1', flat, @click.native='dialog = false') Save
+
+          
+
+          v-card-title(primary-title)
+            div.elem Всего дней: -
+            div.elem Осталось дней: -
+            div.elem В день: -
+            div.elem В месяц: -
+            div.elem Уже есть: -
+            div.elem Осталось: -
+            div.elem В день с корректировкой: -
+            div.elem Следующий взнос: -
+
+
 </template>
 
 <script>
   export default {
     data () {
       return {
-        clipped: false,
-        drawer: true,
-        fixed: false,
-        items: [
-          { icon: 'bubble_chart', title: 'Inspire' }
-        ],
-        miniVariant: false,
-        right: true,
-        rightDrawer: false,
-        title: 'Vuetify.js'
+        valid: false,
+        start: false,
+        end: false,
+        date: {
+          start: null,
+          end: null
+        },
+        sum: '',
+        dialog: false
       }
     }
   }
@@ -117,4 +102,12 @@
 
 <style lang="stylus">
   @import './stylus/main'
+
+  .form 
+    padding 25px
+
+  .elem 
+    width 100%
+    margin-bottom 7px
+
 </style>
