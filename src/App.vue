@@ -57,12 +57,34 @@
               v-icon(dark) add
             v-card
               v-card-title
-                span.headline User Profile
+                span.headline Добавить
               v-card-text
                 v-container(grid-list-md)
                   v-layout(wrap)
-                    v-flex(xs12, sm6, md4)
-                      v-text-field(label='Legal first name', required)
+                    v-flex
+                      v-menu(lazy
+                             v-model='end', 
+                             transition='scale-transition', 
+                             offset-y, 
+                             full-width, 
+                             :nudge-right='40', 
+                             max-width='290px', 
+                             min-width='290px')
+                        v-text-field(slot='activator', 
+                                    label='Дата конца', 
+                                    v-model='date.add', 
+                                    prepend-icon='event', 
+                                    readonly)
+                        v-date-picker(v-model='date.add', 
+                                      no-title, 
+                                      scrollable, 
+                                      actions)
+                          template(slot-scope='{ save, cancel }')
+                      v-text-field(name="sum"
+                                  v-model="addMoney"
+                                  type="number"
+                                  prepend-icon='attach_money',
+                                  label="Сумма")
                     
               v-card-actions
                 v-spacer
@@ -93,12 +115,15 @@
         valid: false,
         start: false,
         end: false,
+        add: false,
         date: {
           start: '2017-08-27',
-          end: '2018-06-01'
+          end: '2018-06-01',
+          add: moment().format('YYYY-MM-DD')
         },
         sum: 200000,
         saveMoney: 41763,
+        addMoney: 0,
         dialog: false
       }
     },
@@ -125,15 +150,14 @@
         return Math.ceil(this.leftToSaveMoney / this.daysCount)
       },
       nextInstallment: function () {
+        if (this.saveMoney > this.sum) return 'Done'
         let i = 0
         let day
         let perDay
-        let k
 
         while (true) {
           day = moment().add(i, 'day')
-          k = moment(this.date.end).diff(moment(day), 'days')
-          perDay = Math.ceil(this.leftToSaveMoney / k)
+          perDay = Math.ceil(this.leftToSaveMoney / moment(this.date.end).diff(moment(day), 'days'))
           if (perDay < this.perDay) {
             i++
           }
