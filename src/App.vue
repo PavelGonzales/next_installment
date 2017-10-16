@@ -134,7 +134,12 @@
           day = moment().add(i, 'day')
           k = moment(this.date.end).diff(moment(day), 'days')
           perDay = Math.ceil(this.leftToSaveMoney / k)
-          i++
+          if (perDay < this.perDay) {
+            i++
+          }
+          if (perDay > this.perDay) {
+            i--
+          }
           if ((perDay >= this.perDay && perDay < this.perDay + 3) || (perDay <= this.perDay && perDay > this.perDay - 3)) {
             break
           }
