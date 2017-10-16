@@ -42,6 +42,8 @@
                             actions)
                 template(slot-scope='{ save, cancel }')
             v-text-field(name="sum"
+                         v-model="saveMoney"
+                         type="number"
                          prepend-icon='attach_money',
                          label="Сумма")
 
@@ -70,19 +72,21 @@
           
 
           v-card-title(primary-title)
-            div.elem Всего дней: -
-            div.elem Осталось дней: -
-            div.elem В день: -
-            div.elem В месяц: -
-            div.elem Уже есть: -
-            div.elem Осталось: -
-            div.elem В день с корректировкой: -
-            div.elem Следующий взнос: -
+            div.elem Всего дней: {{ daysTotal || '-' }}
+            div.elem Осталось дней: {{ daysCount || '-' }}
+            div.elem В день: {{ perDay || '-' }}
+            div.elem В месяц: {{ perMonth || '-' }}
+            div.elem Уже есть: {{ saveMoney || '-' }}
+            div.elem Осталось: {{ leftToSaveMoney || '-' }}
+            div.elem В день с корректировкой: {{ perDayWidthAdjustment || '-' }}
+            div.elem Следующий взнос: {{ nextInstallment || '-' }}
 
 
 </template>
 
 <script>
+  import moment from 'moment'
+
   export default {
     data () {
       return {
@@ -90,11 +94,52 @@
         start: false,
         end: false,
         date: {
-          start: null,
-          end: null
+          start: '2017-08-27',
+          end: '2018-06-01'
         },
-        sum: '',
+        sum: 200000,
+        saveMoney: 41763,
         dialog: false
+      }
+    },
+    computed: {
+      moment: function () {
+        return moment
+      },
+      daysTotal: function () {
+        return moment(this.date.end).diff(moment(this.date.start), 'days')
+      },
+      daysCount: function () {
+        return moment(this.date.end).diff(moment(), 'days')
+      },
+      perMonth: function () {
+        return Math.ceil(this.sum / moment(this.date.end).diff(moment(this.date.start), 'month'))
+      },
+      perDay: function () {
+        return Math.ceil(this.sum / this.daysTotal)
+      },
+      leftToSaveMoney: function () {
+        return this.sum - this.saveMoney
+      },
+      perDayWidthAdjustment: function () {
+        return Math.ceil(this.leftToSaveMoney / this.daysCount)
+      },
+      nextInstallment: function () {
+        let i = 0
+        let day
+        let perDay
+        let k
+
+        while (true) {
+          day = moment().add(i, 'day')
+          k = moment(this.date.end).diff(moment(day), 'days')
+          perDay = Math.ceil(this.leftToSaveMoney / k)
+          i++
+          if ((perDay >= this.perDay && perDay < this.perDay + 3) || (perDay <= this.perDay && perDay > this.perDay - 3)) {
+            break
+          }
+        }
+        return moment(day).format('DD.MM.YYYY')
       }
     }
   }
