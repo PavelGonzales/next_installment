@@ -1,57 +1,22 @@
 <template lang="pug">
   v-app(light)
-    v-layout
+    v-layout(column align-center justify-center)
+      v-progress-circular(v-bind:size="290"
+                          v-bind:width="20"
+                          v-bind:rotate="270"
+                          v-bind:value="percentSum"
+                          color="teal") {{ saveMoney }}
       v-flex(xs12, sm6, offset-sm3)
+    
         v-card
-          v-form.form
-            v-menu(lazy
-                   v-model='start', 
-                   transition='scale-transition', 
-                   offset-y, 
-                   full-width, 
-                   :nudge-right='40', 
-                   max-width='290px', 
-                   min-width='290px')
-              v-text-field(slot='activator', 
-                          label='Дата старта', 
-                          v-model='date.start', 
-                          prepend-icon='event', 
-                          readonly)
-              v-date-picker(v-model='date.start', 
-                            no-title, 
-                            scrollable, 
-                            actions)
-                template(slot-scope='{ save, cancel }')
-
-            v-menu(lazy
-                   v-model='end', 
-                   transition='scale-transition', 
-                   offset-y, 
-                   full-width, 
-                   :nudge-right='40', 
-                   max-width='290px', 
-                   min-width='290px')
-              v-text-field(slot='activator', 
-                          label='Дата конца', 
-                          v-model='date.end', 
-                          prepend-icon='event', 
-                          readonly)
-              v-date-picker(v-model='date.end', 
-                            no-title, 
-                            scrollable, 
-                            actions)
-                template(slot-scope='{ save, cancel }')
-            v-text-field(name="sum"
-                         v-model="saveMoney"
-                         type="number"
-                         prepend-icon='attach_money',
-                         label="Сумма")
-
           v-dialog(v-model='dialog',
                    persistent, 
                    max-width='500px')
             v-btn(fab,
                   dark, 
+                  absolute,
+                  top,
+                  right,
                   color='indigo',
                   slot='activator')
               v-icon(dark) add
@@ -149,6 +114,9 @@
       perDayWidthAdjustment: function () {
         return Math.ceil(this.leftToSaveMoney / this.daysCount)
       },
+      percentSum: function () {
+        return this.saveMoney * 100 / this.sum
+      },
       nextInstallment: function () {
         if (this.saveMoney > this.sum) return 'Done'
         let i = 0
@@ -176,6 +144,9 @@
 
 <style lang="stylus">
   @import './stylus/main'
+  .progress-circular
+    margin-top 25px
+    margin-bottom 25px
 
   .form 
     padding 25px
