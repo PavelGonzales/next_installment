@@ -70,7 +70,7 @@
                              min-width='290px')
                         v-text-field(slot='activator', 
                                     label='Дата', 
-                                    v-model='date.add', 
+                                    v-model='sum.add', 
                                     prepend-icon='event', 
                                     readonly)
                         v-date-picker(v-model='date.add', 
@@ -86,8 +86,13 @@
                     
               v-card-actions
                 v-spacer
-                v-btn(color='blue darken-1', flat, @click.native='dialog = false') Close
-                v-btn(color='blue darken-1', flat, @click.native='dialog = false') Save
+                v-btn(color='blue darken-1', 
+                      flat, 
+                      @click.native='dialog = false') Close
+                v-btn(color='blue darken-1', 
+                      flat, 
+                      @click.native='dialog = false'
+                      @click="save()") Save
 
           
 
@@ -184,6 +189,12 @@
           }
         }
         return moment(day).format('DD.MM.YYYY')
+      }
+    },
+    methods: {
+      save: function () {
+        console.log('date.add', Number(this.addMoney))
+        this.saveMoney = this.saveMoney + Number(this.addMoney)
       }
     }
   }
