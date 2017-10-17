@@ -12,6 +12,12 @@
             strong Pavel Gonzales
 
         v-list-tile(@click="")
+          .tile-item
+            v-flex
+              strong На тачку
+              v-progress-linear(v-model="percentSum")
+
+        v-list-tile(@click="")
           v-list-tile-action
             v-icon add
           v-list-tile-content
@@ -63,7 +69,7 @@
                              max-width='290px', 
                              min-width='290px')
                         v-text-field(slot='activator', 
-                                    label='Дата конца', 
+                                    label='Дата', 
                                     v-model='date.add', 
                                     prepend-icon='event', 
                                     readonly)
@@ -195,5 +201,13 @@
   .elem 
     width 100%
     margin-bottom 7px
+
+  .tile-item
+    width 100%
+    margin-top 40px
+    margin-bottom 15px
+    .progress-linear
+      margin-top 3px
+
 
 </style>
