@@ -1,11 +1,38 @@
 <template lang="pug">
   v-app(light)
+    v-navigation-drawer(persistent, 
+                        v-model='drawer', 
+                        enable-resize-watcher, 
+                        app)
+      v-list(dense)
+        v-list-tile
+          v-flex
+            v-avatar(size='36px', slot='activator')
+              img(src='https://pp.userapi.com/c840639/v840639432/135da/a-vQaRxBd3s.jpg', alt='')
+            strong Pavel Gonzales
+
+        v-list-tile(@click="")
+          v-list-tile-action
+            v-icon add
+          v-list-tile-content
+            v-list-tile-title New 
+
+    v-toolbar(color='cyan', dark)
+      v-toolbar-side-icon(@click.stop="drawer = !drawer")
+      v-toolbar-title Next Installment
+      v-spacer
+      v-btn(icon)
+        v-icon more_vert
+
     v-layout(column align-center justify-center)
-      v-progress-circular(v-bind:size="290"
+      v-progress-circular(v-bind:size="260"
                           v-bind:width="20"
                           v-bind:rotate="270"
                           v-bind:value="percentSum"
-                          color="teal") {{ saveMoney }}
+                          color="teal") 
+        div {{ saveMoney }}
+        hr 
+        div {{ leftToSaveMoney }}
       v-flex(xs12, sm6, offset-sm3)
     
         v-card
@@ -59,14 +86,24 @@
           
 
           v-card-title(primary-title)
-            div.elem Всего дней: {{ daysTotal || '-' }}
-            div.elem Осталось дней: {{ daysCount || '-' }}
-            div.elem В день: {{ perDay || '-' }}
-            div.elem В месяц: {{ perMonth || '-' }}
-            div.elem Уже есть: {{ saveMoney || '-' }}
-            div.elem Осталось: {{ leftToSaveMoney || '-' }}
-            div.elem В день с корректировкой: {{ perDayWidthAdjustment || '-' }}
-            div.elem Следующий взнос: {{ nextInstallment || '-' }}
+            div.elem Дней: {{ daysTotal - daysCount || '-' }} / {{ daysTotal || '-' }}
+              v-progress-linear(v-model="valueDeterminate")
+
+            div.elem
+              v-chip(color='green', text-color='white')
+                v-avatar.green.darken-4 {{ perDay || '-' }}
+                | В день
+
+              v-chip(color='green', text-color='white')
+                v-avatar.green.darken-4 {{ perMonth || '-' }}
+                | В месяц
+                
+              v-chip(color='green', text-color='white')
+                v-avatar.green.darken-4 {{ perDayWidthAdjustment || '-' }}
+                | В день с корректировкой
+
+            div.elem Рекомендуемый следующий взнос: 
+              strong {{ nextInstallment || '-' }}
 
 
 </template>
@@ -77,6 +114,7 @@
   export default {
     data () {
       return {
+        drawer: true,
         valid: false,
         start: false,
         end: false,
@@ -116,6 +154,9 @@
       },
       percentSum: function () {
         return this.saveMoney * 100 / this.sum
+      },
+      valueDeterminate: function () {
+        return (this.daysTotal - this.daysCount) * 100 / this.daysTotal
       },
       nextInstallment: function () {
         if (this.saveMoney > this.sum) return 'Done'
